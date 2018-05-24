@@ -11,6 +11,6 @@ public class MainController {
 			value= {"/"},
 			method = {RequestMethod.GET, RequestMethod.POST})
 	public String redirect() {
-		return "redirect:/index.html";
+		return "redirect:/login.html";
 	}
 }
