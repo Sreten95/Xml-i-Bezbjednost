@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Izmjena korisnika</title>
+
+	<script  type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+ 	<script  type="text/javascript" src="js/registracija.js"></script>
+ 	<script  type="text/javascript" src="js/changePass.js"></script>
+   	<script  type="text/javascript" src="js/index.js"></script>
+   	
+   	<link rel="stylesheet" type="text/css" href="css/index.css">
+  </head>
+  <body>
+<!-- toolbar -->
+<ul id="toolbar">  
+  	<li class="left" id="home_tb" ><a href="index.html">Home</a></li>
+</ul>
+
+                    <div>
+                        <h1 ><b>Izmjena lozinke</b></h1>
+                    </div>
+                    <div>
+                        <form  id = "editForm" method="post" >
+                            <fieldset>
+                               
+
+                                <div>
+                                    <input required placeholder="Lozinka" id="userPassword" type="password" name="userPassword">
+                                </div>
+
+                                <div>
+                                    <input required placeholder="Potvrda lozinke" id="userPasswordConf" type="password" name="userPasswordConf">
+                                </div>
+                                
+                                
+                                
+                              	<input  id="registerButton" onclick="changePass()" type="button" value="Izmjeni">
+                               
+                                
+                                
+                            </fieldset>
+                        </form>
+                        
+                       
+                    </div>
+        
+  </body>
+</html>

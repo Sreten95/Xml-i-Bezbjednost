@@ -13,8 +13,6 @@ public class UserServicesImp implements UserServices{
 	@Autowired
 	private UserRepository userRepository;
 	
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	@Override
 	public User findUserByEmail(String email) {

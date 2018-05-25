@@ -1,6 +1,5 @@
 package xml.projekat.configuration;
 
-
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,9 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.BeanIds;
 
 @Configuration
 @EnableWebSecurity
@@ -20,45 +21,40 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
-
+	
 	@Autowired
 	private DataSource dataSource;
 	
-	@Value("${spring.queries.users-query}")
-	private String usersQuery;
-	
-	
-	private String rolesQuery;
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
-		auth.
-			jdbcAuthentication()
-				.usersByUsernameQuery(usersQuery)
-				.authoritiesByUsernameQuery(rolesQuery)
-				.dataSource(dataSource)
-				.passwordEncoder(bCryptPasswordEncoder);
+		
+		auth.jdbcAuthentication().dataSource(dataSource)
+        .usersByUsernameQuery("select email, user_password, true"
+            + " from user where email=?")
+        .authoritiesByUsernameQuery("select email, authority "
+            + "from user where email=?").passwordEncoder(bCryptPasswordEncoder);
 	}
-
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		
-		http.
-			authorizeRequests()
-				.antMatchers("/").permitAll()
-				.antMatchers("/login").permitAll()
-				.antMatchers("/registration").permitAll()
-				.antMatchers("/admin/**").hasAuthority("ADMIN").anyRequest()
-				.authenticated().and().csrf().disable().formLogin()
-				.loginPage("/login").failureUrl("/login?error=true")
-				.defaultSuccessUrl("/admin/home")
-				.usernameParameter("email")
-				.passwordParameter("password")
-				.and().logout()
-				.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-				.logoutSuccessUrl("/").and().exceptionHandling()
-				.accessDeniedPage("/access-denied");
+		http
+        .authorizeRequests()
+        	.antMatchers("/", "/*.html").permitAll()
+        	.antMatchers("/login").permitAll()
+        	.antMatchers("/register").permitAll()
+        	.antMatchers("/user/registerUser").permitAll()
+        	.antMatchers("/user/status").permitAll()
+        	.antMatchers("/user/korisnik").hasAuthority("KORISNIK")
+        	.antMatchers("/user/admin").hasAuthority("ADMIN")
+        	.antMatchers("/user/agent").hasAuthority("AGENT")
+        	.anyRequest()
+        	.authenticated().and().csrf().disable().formLogin().loginPage("/login").defaultSuccessUrl("/index.html").failureUrl("/login?error=true")
+			.and().logout().logoutUrl("/logout").clearAuthentication(true)
+	        .deleteCookies("JSESSIONID")
+	        .invalidateHttpSession(true);
 	}
 	
 	@Override
@@ -66,6 +62,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	    web
 	       .ignoring()
 	       .antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
+	}
+	
+	
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+		return bCryptPasswordEncoder;
 	}
 
 }
